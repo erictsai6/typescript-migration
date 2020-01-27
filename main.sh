@@ -55,7 +55,7 @@ validate_no_js() {
     fi
 }
 
-echo "Started typescript file check"
+echo "Started typescript migration"
 
 added_files=$(git diff $base_branch --name-status --diff-filter=A | awk '{print $2}' | tr "\n" "\n")
 validate_no_js "Added" $added_files
