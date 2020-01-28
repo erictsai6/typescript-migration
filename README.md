@@ -10,12 +10,14 @@ It will check the changed files for your branch against a base branch (usually m
 * APP_DIRECTORY - this is the relative path to where your application JS code is located.  Additional directories can be separated with a comma delimiter.
 * BLACKLIST_DIRECTORY - (optional) this is the relative path to directories that you wish to ignore for the JS rule enforcement.  Additional directories can be separated with a comma delimiter.
 
-The script will segment the changed files by their git diff filter: added, renamed, changed type, etc.  Please see example output below. 
+The script will segment the changed files by their git diff filter: added, modified, and renamed.  Please see example output below. Both directory parameters accept regex.  
 
 ### Example
 `./main.sh master app1/,app2 app1/scripts/`
 
 `./main.sh production app/`
+
+`./main.sh production app/ app/.*__tests__/`
 
 ### Example output
 ```
