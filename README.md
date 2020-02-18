@@ -1,4 +1,4 @@
-# Typescript Migration
+# Typescript Migration Linter
 Bash script to help with your javascript to typescript migration
 
 It will check the changed files for your branch against a base branch (usually master) and if it finds any files still end in .js or .jsx it will exit with code 1.  If used in a CI/CD pipeline it will protect your team from touching or adding new javascript files without converting them to typescript. 
