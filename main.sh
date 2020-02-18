@@ -2,7 +2,7 @@
 set -e
 
 if [ -z $1 ]; then    
-    echo "Base branch argument not found, in most cases it should be master"
+    echo "Base branch argument not found, in most cases it should be origin/master"
     echo "Usage: ./main.sh <BASE_BRANCH> <APP_DIRECTORY> <BLACKLIST_DIRECTORY>"
     exit 1
 fi
@@ -55,13 +55,39 @@ validate_no_js() {
     fi
 }
 
+filter_out_minor_changes() {
+    # Function only meant to be used with "modified" files
+    local git_diff_stats
+    git_diff_stats=$(git diff $base_branch --numstat --diff-filter=M)
+    SAVEIFS=$IFS   # Save current IFS
+    IFS=$'\n'      # Change IFS to new line
+    git_diff_stats=($git_diff_stats) # split to array
+    IFS=$SAVEIFS   # Restore IFS
+   
+    modified_files=
+
+    for (( i=0; i<${#git_diff_stats[@]}; i++ )) ; 
+    do
+        stat_lines=(${git_diff_stats[$i]})
+
+        lines_added=${stat_lines[0]}
+        lines_removed=${stat_lines[1]}
+        filename=${stat_lines[2]}
+
+        # Strategy to determine significance - tweak as needed
+        if [ $lines_added -ge 5 ]; then
+            modified_files="$modified_files $filename"
+        fi
+    done
+}
+
 echo "Started typescript migration"
 
 modified_files=$(git diff $base_branch --name-status --diff-filter=A | awk '{print $2}' | tr "\n" "\n")
 validate_no_js "Added" "${modified_files[@]}"
 final_return_code=$(($final_return_code+$return_code >= 1 ? 1 : 0))
 
-modified_files=$(git diff $base_branch --name-status --diff-filter=M | awk '{print $2}' | tr "\n" "\n")
+filter_out_minor_changes
 validate_no_js "Modified" "${modified_files[@]}"
 final_return_code=$(($final_return_code+$return_code >= 1 ? 1 : 0))
 
